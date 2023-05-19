@@ -1,0 +1,13 @@
+{
+    "name": "OEEonline",
+    "alias": "oeeonline",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\OEEonline\\Providers\\OEEonlineServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
