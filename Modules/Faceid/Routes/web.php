@@ -18,7 +18,7 @@ Route::name('faceid.')->group(function () {
     Route::get('/', 'FaceidController@index');
 
     Route::get('/list-karyawan', 'FotoKaryawanController@list')->name('karyawan.list');
-    Route::get('/bulk-export', 'FotoKaryawanController@bulkexport')->name('karyawan.bulkexport');
+    Route::post('/bulk-export', 'FotoKaryawanController@addPersons')->name('karyawan.bulkexport');
     Route::get('/export-karyawan/{id}', 'FotoKaryawanController@export')->name('karyawan.export');
     Route::resource('karyawan', 'FotoKaryawanController');
 

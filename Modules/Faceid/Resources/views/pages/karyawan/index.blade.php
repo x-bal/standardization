@@ -29,14 +29,31 @@
                     <a href="javascript:;" class="btn btn-xs btn-icon btn-danger" data-toggle="panel-remove"><i class="fa fa-times"></i></a>
                 </div>
             </div>
-            <div class="panel-body">
-                <div class="row mb-3">
-                    <div class="col-md-12 ms-auto">
-                        <a href="{{ route('faceid.karyawan.bulkexport') }}" class="btn btn-success mr-1 "><i class="ion-ios-upload"></i> Export All</a>
 
-                        <a href="#modal-dialog" id="btn-add" class="btn btn-primary" data-route="{{ route('faceid.karyawan.store') }}" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Foto</a>
+            <div class="panel-body">
+                <form action="{{ route('faceid.karyawan.bulkexport') }}" class="row mb-3" method="post" id="form-export">
+                    @csrf
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label for="device">Device</label>
+                            <select name="device" id="device" class="form-control">
+                                <option disabled selected>-- Pilih device --</option>
+                                @foreach($devices as $device)
+                                <option value="{{ $device->id }}">{{ $device->nama_device }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </div>
+                    <div class="col-md-6 mt-3 ms-auto">
+                        <button type="submit" value="add" id="btn-export" class="btn btn-success mt-1"></i> Export Foto</button>
+                        <!-- <button type="submit" value="edit" id="btn-export" class="btn btn-success mt-1"></i> Export Foto</button> -->
+                    </div>
+
+                    <div class="col-md-3 mt-3">
+                        <a href="#modal-test" id="btn-add" class="btn btn-primary mt-1" style="float: right;" data-route="{{ route('faceid.karyawan.store') }}" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Foto</a>
+                    </div>
+                </form>
+
                 <div class="row">
                     <!-- html -->
                     <div class="table-responsive">
@@ -61,7 +78,7 @@
     </div>
 </div>
 <!-- #modal-dialog -->
-<div class="modal fade" id="modal-dialog">
+<div class="modal fade" id="modal-test">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -119,8 +136,8 @@
         deferRender: true,
         pagination: true,
         columns: [{
-                data: 'DT_RowIndex',
-                name: 'DT_RowIndex'
+                data: 'checkbox',
+                name: 'checkbox'
             },
             {
                 data: 'foto',
@@ -170,6 +187,17 @@
                 $("#karyawan").val(karyawan.txtName)
             }
         })
+    })
+
+    $("#datatable").on('click', '.check-karyawan', function() {
+        let id = $(this).attr('id')
+
+        if ($(this).is(':checked')) {
+            $("#form-export").append(`<input type="hidden" name="idkary[]" id="kar-` + id + `" value="` + id + `">`);
+        } else {
+            $("#kar-" + id).remove()
+        }
+
     })
 
     $("#datatable").on('click', '.btn-delete', function(e) {

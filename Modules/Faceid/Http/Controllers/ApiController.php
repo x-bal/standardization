@@ -7,6 +7,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\Faceid\Entities\Device;
 use Modules\Faceid\Entities\Log;
 
 class ApiController extends Controller
@@ -21,9 +22,11 @@ class ApiController extends Controller
             $foto = $request->file('foto');
             $fotoUrl = $foto->storeAs('logs', $now . '-' . rand(1000, 9999) . '.' . $foto->extension());
 
+            $device = Device::where('iddev', $request->id_device)->first();
+
             Log::create([
                 'user_id' => $request->id_user,
-                'device_id' => $request->id_device,
+                'device_id' => $device->id,
                 'moustache' => $request->moustache,
                 'beard' => $request->beard,
                 'suhu' => $request->suhu,

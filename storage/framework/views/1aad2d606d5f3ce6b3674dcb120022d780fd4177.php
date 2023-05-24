@@ -29,13 +29,19 @@
                 </div>
             </div>
             <div class="panel-body">
-                <div class="row mb-3">
-                    <div class="col-md-12 ms-auto">
-                        <a href="<?php echo e(route('faceid.karyawan.bulkexport')); ?>" class="btn btn-success mr-1 "><i class="ion-ios-upload"></i> Export All</a>
-
-                        <a href="#modal-dialog" id="btn-add" class="btn btn-primary" data-route="<?php echo e(route('faceid.karyawan.store')); ?>" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Foto</a>
+                <form method="GET" class="row mb-3">
+                    <div class="col-md-4 form-group">
+                        <label for="from">From</label>
+                        <input type="date" name="from" id="from" class="form-control" value="<?php echo e(request('from')); ?>">
                     </div>
-                </div>
+                    <div class="col-md-4 form-group">
+                        <label for="to">To</label>
+                        <input type="date" name="to" id="to" class="form-control" value="<?php echo e(request('to')); ?>">
+                    </div>
+                    <div class="col-md-4 form-group mt-3">
+                        <button type="submit" class="btn btn-primary mt-1">Submit</button>
+                    </div>
+                </form>
                 <div class="row">
                     <!-- html -->
                     <div class="table-responsive">
@@ -44,9 +50,11 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Foto</th>
-                                    <th>Karyawan</th>
                                     <th>Date Created</th>
-                                    <th>Action</th>
+                                    <th>Karyawan</th>
+                                    <th>Beard</th>
+                                    <th>Moustache</th>
+                                    <th>Suhu</th>
                                 </tr>
                             </thead>
 
@@ -101,33 +109,52 @@
 <script src="<?php echo e(asset('/plugins/sweetalert/dist/sweetalert.min.js')); ?>"></script>
 <script src="<?php echo e(asset('/plugins/gritter/js/jquery.gritter.js')); ?>"></script>
 <script>
+    let from = $("#from").val();
+    let to = $("#to").val();
+
     var table = $('#datatable').DataTable({
         processing: true,
         serverSide: true,
         responsive: true,
-        ajax: "<?php echo e(route('faceid.logs.list')); ?>",
+        ajax: {
+            url: "<?php echo e(route('faceid.logs.list')); ?>",
+            type: "GET",
+            data: {
+                "from": from,
+                "to": to
+            }
+        },
         deferRender: true,
         pagination: true,
         columns: [{
                 data: 'DT_RowIndex',
-                name: 'DT_RowIndex'
+                name: 'DT_RowIndex',
+                sortable: false,
+                searchable: false
             },
             {
                 data: 'foto',
                 name: 'foto'
             },
             {
+                data: 'dtmCreated',
+                name: 'dtmCreated'
+            },
+            {
                 data: 'txtName',
                 name: 'txtName'
             },
             {
-                data: 'dtmCreated',
-                name: 'dtmCreated'
+                data: 'beard',
+                name: 'beard'
             },
-
             {
-                data: 'action',
-                name: 'action',
+                data: 'moustache',
+                name: 'moustache'
+            },
+            {
+                data: 'suhu',
+                name: 'suhu'
             },
         ]
     });

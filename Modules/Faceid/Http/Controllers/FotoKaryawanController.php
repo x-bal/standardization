@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Modules\Faceid\Entities\Device;
 use Modules\Faceid\Entities\FotoKaryawan;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -19,8 +20,9 @@ class FotoKaryawanController extends Controller
         $fotoId = DB::connection('faceid')->table('foto_karyawans')->pluck('user_id');
 
         $karyawan = DB::connection('mysql')->table('musers')->whereNotIn('id', $fotoId)->get();
+        $devices = Device::get();
 
-        return view('faceid::pages.karyawan.index', compact('karyawan'));
+        return view('faceid::pages.karyawan.index', compact('karyawan', 'devices'));
     }
 
     public function list(Request $request)
@@ -30,13 +32,15 @@ class FotoKaryawanController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    $actionBtn = '';
+                ->editColumn('checkbox', function ($row) {
+                    $checkbox = '';
                     if ($row->is_export == 0) {
-                        $actionBtn .= '<a href="' . route('faceid.karyawan.export', $row->id) . '" id="' . $row->id . '" class="btn btn-sm btn-secondary btn-edit">Export</a> ';
+                        $checkbox .= '<input type="checkbox" name="" id="' . $row->id . '" class="check-karyawan">';
                     }
-
-                    $actionBtn .= '<a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('faceid.karyawan.update', $row->id) . '" data-bs-toggle="modal">Edit</a> <button type="button" data-route="' . route('faceid.karyawan.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                    return $checkbox;
+                })
+                ->editColumn('action', function ($row) {
+                    $actionBtn = '<a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('faceid.karyawan.update', $row->id) . '" data-bs-toggle="modal">Edit</a> <button type="button" data-route="' . route('faceid.karyawan.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
 
                     return $actionBtn;
                 })
@@ -48,7 +52,7 @@ class FotoKaryawanController extends Controller
                 ->editColumn('dtmCreated', function ($row) {
                     return Carbon::parse($row->created_at)->format('d/m/Y H:i:s');
                 })
-                ->rawColumns(['action', 'foto'])
+                ->rawColumns(['action', 'foto', 'checkbox'])
                 ->make(true);
         }
     }
@@ -144,6 +148,7 @@ class FotoKaryawanController extends Controller
 
             $fotoKaryawan->update([
                 'foto' => $fotoUrl,
+                'is_export' => 0
             ]);
 
             DB::commit();
@@ -174,14 +179,15 @@ class FotoKaryawanController extends Controller
         }
     }
 
-    public function bulkexport()
+    public function addPersons(Request $request)
     {
-        $deviceTarget = 1935378;
-        $ipDevice = '192.168.99.121';
+        $device = Device::find($request->device);
+        $deviceTarget = $device->iddev;
+        $ipDevice = $device->ipaddres;
 
         $personInfo = [];
 
-        $karyawan = FotoKaryawan::get();
+        $karyawan = FotoKaryawan::whereIn('id', $request->idkary)->get();
 
         $newArray = [
             "operator" => "AddPersons",
@@ -208,7 +214,6 @@ class FotoKaryawanController extends Controller
         // Encode newArray to json format
         $json = json_encode($newArray, JSON_UNESCAPED_SLASHES);
 
-
         $headers = array(
             "Authorization: Basic " . base64_encode("admin:admin"),
             'Content-Type: application/x-www-form-urlencoded'
@@ -227,7 +232,7 @@ class FotoKaryawanController extends Controller
                 $p->update(['is_export' => 1]);
             }
 
-            return back()->with('success', "Semua foto karyawan berhasil diexport");
+            return back()->with('success', "Foto karyawan berhasil diexport");
         } else {
             return back()->with('error', $result);
         }
