@@ -28,7 +28,7 @@ class FotoKaryawanController extends Controller
     public function list(Request $request)
     {
         if ($request->ajax()) {
-            $data = DB::table('standardization.musers as users')->join('faceid.foto_karyawans as foto', 'foto.user_id', '=', 'users.id')->get(['txtName', 'created_at', 'foto', 'foto.id', 'is_export']);
+            $data = DB::table('standardization.musers as users')->join('faceid.foto_karyawans as foto', 'foto.user_id', '=', 'users.id')->get(['txtName', 'created_at', 'foto', 'foto.id', 'is_export', 'is_edit']);
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -40,8 +40,23 @@ class FotoKaryawanController extends Controller
                     return $checkbox;
                 })
                 ->editColumn('action', function ($row) {
-                    $actionBtn = '<a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('faceid.karyawan.update', $row->id) . '" data-bs-toggle="modal">Edit</a> <button type="button" data-route="' . route('faceid.karyawan.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                    $actionBtn = '<div class="btn-group my-n1">
+                        <button type="button" disabled class="btn btn-secondary btn-sm">Action</button>
+                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <span class="caret"></span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                        <a href="' . route('faceid.karyawan.edit', $row->id) . '" class="dropdown-item ">Edit</a>
+                        <a data-route="' . route('faceid.karyawan.destroy', $row->id) . '" class="dropdown-item btn-delete">Delete</a>';
+                    if ($row->is_edit == 1) {
+                        $actionBtn .= '<a href="' . route('faceid.karyawan.updatePerson', $row->id) . '"  class="dropdown-item btn-update">Update To Device</a> ';
+                    }
+                    if ($row->is_export == 1) {
+                        $actionBtn .= '<a href="' . route('faceid.karyawan.deletePerson', $row->id) . '"  class="dropdown-item btn-del">Delete From Device</a> ';
+                    }
 
+                    $actionBtn .= '</div>
+                    </div>';
                     return $actionBtn;
                 })
                 ->editColumn('foto', function ($row) {
@@ -57,20 +72,11 @@ class FotoKaryawanController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
     public function create()
     {
         return view('faceid::create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -100,11 +106,6 @@ class FotoKaryawanController extends Controller
         }
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
     public function show($id)
     {
         $karyawan = FotoKaryawan::find($id);
@@ -114,22 +115,13 @@ class FotoKaryawanController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
     public function edit($id)
     {
-        return view('faceid::edit');
+        $fotoKaryawan = FotoKaryawan::find($id);
+
+        return view('faceid::pages.karyawan.form', compact('fotoKaryawan'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -148,12 +140,12 @@ class FotoKaryawanController extends Controller
 
             $fotoKaryawan->update([
                 'foto' => $fotoUrl,
-                'is_export' => 0
+                'is_edit' => 1
             ]);
 
             DB::commit();
 
-            return back()->with('success', "Foto karyawan berhasil diupdate");
+            return redirect()->route('faceid.karyawan.index')->with('success', "Foto karyawan berhasil diupdate");
         } catch (\Throwable $th) {
             DB::rollBack();
             return back()->with('error', $th->getMessage());
@@ -229,7 +221,7 @@ class FotoKaryawanController extends Controller
 
         if ($result['code'] == 200) {
             foreach ($karyawan as $p) {
-                $p->update(['is_export' => 1]);
+                $p->update(['is_export' => 1, 'is_edit' => 0]);
             }
 
             return back()->with('success', "Foto karyawan berhasil diexport");
@@ -238,43 +230,42 @@ class FotoKaryawanController extends Controller
         }
     }
 
-    public function export($id)
+    public function updatePerson(Request $request, $id)
     {
-        $deviceTarget = 1935378;
-        $ipDevice = '192.168.99.121';
+        if (!$request->device) {
+            return back()->with('error', "Select Device");
+        }
 
-        $personInfo = [];
+        $device = Device::find($request->device);
+        $deviceTarget = $device->iddev;
+        $ipDevice = $device->ipaddres;
 
         $karyawan = FotoKaryawan::find($id);
-
         $member = DB::connection('mysql')->table('musers')->find($karyawan->user_id);
 
         $gambar = file_get_contents(storage_path('/app/public/' . $karyawan->foto));
-
         $gambar_format = base64_encode($gambar);
-        $id = $member->txtNik;
 
-        $personInfo = [
-            "operator" => "AddPerson",
-            "info" => [
+        $data = array(
+            "operator" => "EditPerson",
+            "info" => array(
                 "DeviceID" => $deviceTarget,
-                "Name" => $member->txtName,
-                "CustomizeID" => intval($id),
-                "PersonUUID" => $id,
-            ],
+                "IdType" => 0,
+                "CustomizeID" => $member->txtNik,
+                "PersonUUID" => $member->txtNik,
+            ),
             "picinfo" => $gambar_format
-        ];
+        );
 
         // Encode newArray to json format
-        $json = json_encode($personInfo, JSON_UNESCAPED_SLASHES);
+        $json = json_encode($data, JSON_UNESCAPED_SLASHES);
 
         $headers = array(
             "Authorization: Basic " . base64_encode("admin:admin"),
             'Content-Type: application/x-www-form-urlencoded'
         );
-
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $ipDevice . '/action/AddPerson');
+        curl_setopt($ch, CURLOPT_URL, $ipDevice . '/action/EditPerson');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -283,7 +274,61 @@ class FotoKaryawanController extends Controller
         curl_close($ch);
 
         if ($result['code'] == 200) {
-            return back()->with('success', "Foto karyawan berhasil diexport");
+            $karyawan->update(['is_export' => 1, 'is_edit' => 0]);
+
+            return back()->with('success', "Foto karyawan berhasil diupdate");
+        } else {
+            return back()->with('error', $result);
+        }
+    }
+
+    public function deletePerson(Request $request, $id)
+    {
+        if (!$request->device) {
+            return back()->with('error', "Select Device");
+        }
+
+        $device = Device::find($request->device);
+        $deviceTarget = $device->iddev;
+        $ipDevice = $device->ipaddres;
+
+        $karyawan = FotoKaryawan::find($id);
+        $member = DB::connection('mysql')->table('musers')->find($karyawan->user_id);
+
+        $gambar = file_get_contents(storage_path('/app/public/' . $karyawan->foto));
+        $gambar_format = base64_encode($gambar);
+
+        $data = array(
+            "operator" => "DeletePerson",
+            "info" => array(
+                "DeviceID" => $deviceTarget,
+                "IdType" => 0,
+                "CustomizeID" => $member->txtNik,
+                "PersonUUID" => $member->txtNik,
+            ),
+        );
+
+        // Encode newArray to json format
+        $json = json_encode($data, JSON_UNESCAPED_SLASHES);
+
+        $headers = array(
+            "Authorization: Basic " . base64_encode("admin:admin"),
+            'Content-Type: application/x-www-form-urlencoded'
+        );
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $ipDevice . '/action/DeletePerson');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = json_decode(curl_exec($ch), true);
+        curl_close($ch);
+
+        if ($result['code'] == 200) {
+            $karyawan->update(['is_export' => 0, 'is_edit' => 0]);
+
+
+            return back()->with('success', "Foto karyawan berhasil diupdate");
         } else {
             return back()->with('error', $result);
         }

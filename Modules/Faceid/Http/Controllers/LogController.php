@@ -7,6 +7,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\Faceid\Entities\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class LogController extends Controller
@@ -78,9 +79,11 @@ class LogController extends Controller
                     }
                 })
                 ->editColumn('foto', function ($row) {
-                    return '<div class="menu-profile-image">
-                    <img src="' . asset('/storage/' . $row->foto) . '" alt="User Photo" width="50">
-                </div>';
+                    return '<a href="#modal-dialog" id="" class="btn-action" data-route="' . route('faceid.logs.show', $row->id) . '" data-bs-toggle="modal">
+                    <div class="menu-profile-image">
+                        <img src="' . $row->foto . '" alt="User Photo" width="50">
+                    </div>
+                </a>';
                 })
                 ->editColumn('dtmCreated', function ($row) {
                     if ($row->beard == 1 || $row->moustache == 1) {
@@ -92,5 +95,14 @@ class LogController extends Controller
                 ->rawColumns(['action', 'foto', 'txtName', 'beard', 'moustache', 'suhu', 'dtmCreated'])
                 ->make(true);
         }
+    }
+
+    public function show($id)
+    {
+        $log = Log::find($id);
+
+        return response()->json([
+            'log' => $log
+        ]);
     }
 }

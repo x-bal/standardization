@@ -19,8 +19,8 @@ class ApiController extends Controller
 
             $now = Carbon::now('Asia/Jakarta')->format('YmdHis');
 
-            $foto = $request->file('foto');
-            $fotoUrl = $foto->storeAs('logs', $now . '-' . rand(1000, 9999) . '.' . $foto->extension());
+            // $foto = $request->file('foto');
+            // $fotoUrl = $foto->storeAs('logs', $now . '-' . rand(1000, 9999) . '.' . $foto->extension());
 
             $device = Device::where('iddev', $request->id_device)->first();
 
@@ -31,7 +31,7 @@ class ApiController extends Controller
                 'beard' => $request->beard,
                 'suhu' => $request->suhu,
                 'waktu' => $request->waktu,
-                'foto' => $fotoUrl,
+                'foto' => $request->foto,
             ]);
 
             DB::commit();

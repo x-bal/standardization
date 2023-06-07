@@ -111,6 +111,40 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal-edit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Form Foto Karyawan</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <form action="" method="post" id="form-foto" data-parsley-validate="true" enctype="multipart/form-data">
+                <?php echo csrf_field(); ?>
+
+                <div class="modal-body">
+                    <div class="form-group karyawan mb-3">
+                        <label for="karyawan">Karyawan</label>
+                        <select name="karyawan" id="karyawan" class="form-control">
+                            <option disabled selected>-- Pilih Karyawan --</option>
+                            <?php $__currentLoopData = $karyawan; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $kry): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($kry->id); ?>"><?php echo e($kry->txtName); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="foto">Foto</label>
+                        <input type="file" name="foto" id="foto" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="javascript:;" class="btn btn-white" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Close</a>
+                    <button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 </div>
 
 <form action="" class="d-none" id="form-delete" method="post">
@@ -126,6 +160,7 @@
 <script src="<?php echo e(asset('/plugins/select-picker/dist/picker.min.js')); ?>"></script>
 <script src="<?php echo e(asset('/plugins/sweetalert/dist/sweetalert.min.js')); ?>"></script>
 <script src="<?php echo e(asset('/plugins/gritter/js/jquery.gritter.js')); ?>"></script>
+
 <script>
     var table = $('#datatable').DataTable({
         processing: true,
@@ -158,6 +193,12 @@
         ]
     });
 
+    $("#device").on('change', function() {
+        let device = $(this).val()
+        let route = $(".btn-update").attr("href");
+        $(".btn-update").attr("href", route + "?device=" + device)
+    })
+
     $("#btn-add").on('click', function() {
         let route = $(this).attr('data-route')
         $(".karyawan").addClass('show')
@@ -172,7 +213,7 @@
         let route = $(this).attr('data-route')
         let id = $(this).attr('id')
 
-        $(".karyawan").addClass('hide')
+        $("#modal-test").addClass('d-none')
         $("#form-foto").attr('action', route)
         $("#form-foto").append(`<input type="hidden" name="_method" value="PUT">`);
 

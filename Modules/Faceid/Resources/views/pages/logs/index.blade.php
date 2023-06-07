@@ -6,6 +6,8 @@
 <link href="{{ asset('/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet" />
 <link href="{{ asset('/plugins/gritter/css/jquery.gritter.css') }}" rel="stylesheet" />
 <link href="{{ asset('/plugins/select-picker/dist/picker.min.css') }}" rel="stylesheet" />
+<link href="{{ asset('/') }}plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" />
+
 @endpush
 @section('content')
 <!-- BEGIN breadcrumb -->
@@ -76,27 +78,25 @@
                 <h4 class="modal-title">Form Foto Karyawan</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
             </div>
-            <form action="" method="post" id="form-foto" data-parsley-validate="true" enctype="multipart/form-data">
-                @csrf
 
-                <div class="modal-body">
 
-                    <div class="form-group">
-                        <label for="foto">Foto</label>
-                        <input type="file" name="foto" id="foto" class="form-control">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <img src="" alt="" id="img-target">
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <a href="javascript:;" class="btn btn-white" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Close</a>
-                    <button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i> Save</button>
-            </form>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:;" class="btn btn-white" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Close</a>
+                <a href="" class="btn btn-success btn-download"><i class="fa-solid fa-download"></i> Download</a>
+            </div>
         </div>
     </div>
-</div>
 
 </div>
 
-<form action="" class="d-none" id="form-delete" method="post">
+<form action="" class=" d-none" id="form-delete" method="post">
     @csrf
     @method('DELETE')
 </form>
@@ -109,6 +109,16 @@
 <script src="{{ asset('/plugins/select-picker/dist/picker.min.js') }}"></script>
 <script src="{{ asset('/plugins/sweetalert/dist/sweetalert.min.js') }}"></script>
 <script src="{{ asset('/plugins/gritter/js/jquery.gritter.js') }}"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-buttons/js/buttons.flash.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="{{ asset('/') }}plugins/pdfmake/build/pdfmake.min.js"></script>
+<script src="{{ asset('/') }}plugins/pdfmake/build/vfs_fonts.js"></script>
+<script src="{{ asset('/') }}plugins/jszip/dist/jszip.min.js"></script>
+
 <script>
     let from = $("#from").val();
     let to = $("#to").val();
@@ -127,6 +137,20 @@
         },
         deferRender: true,
         pagination: true,
+        dom: 'Bfrtip',
+        buttons: [{
+                extend: 'csv',
+                className: 'btn-sm'
+            },
+            {
+                extend: 'excel',
+                className: 'btn-sm btn-success'
+            },
+            {
+                extend: 'pdf',
+                className: 'btn-sm btn-danger'
+            }
+        ],
         columns: [{
                 data: 'DT_RowIndex',
                 name: 'DT_RowIndex',
@@ -186,6 +210,21 @@
                 let karyawan = response.karyawan;
 
                 $("#karyawan").val(karyawan.txtName)
+            }
+        })
+    })
+
+    $("#datatable").on('click', '.btn-action', function() {
+        let route = $(this).attr('data-route')
+
+        $.ajax({
+            url: route,
+            type: 'GET',
+            method: 'GET',
+            success: function(response) {
+                let log = response.log;
+
+                $("#img-target").attr("src", log.foto)
             }
         })
     })
