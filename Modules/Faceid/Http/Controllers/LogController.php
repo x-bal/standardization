@@ -81,7 +81,7 @@ class LogController extends Controller
                 ->editColumn('foto', function ($row) {
                     return '<a href="#modal-dialog" id="" class="btn-action" data-route="' . route('faceid.logs.show', $row->id) . '" data-bs-toggle="modal">
                     <div class="menu-profile-image">
-                        <img src="' . $row->foto . '" alt="User Photo" width="50">
+                        <img src="' . asset('/storage/' . $row->foto) . '" alt="User Photo" width="50">
                     </div>
                 </a>';
                 })
