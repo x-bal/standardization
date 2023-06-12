@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Faceid\Entities\Device;
+use Modules\Faceid\Entities\FotoKaryawan;
 use Modules\Faceid\Entities\Log;
 
 class ApiController extends Controller
@@ -24,7 +25,8 @@ class ApiController extends Controller
 
             $device = Device::where('iddev', $request->id_device)->first();
 
-            $user = DB::connection('faceid')->table('foto_karyawans')->where('employe_id', $request->employeeid)->first();
+            $user = FotoKaryawan::where('employe_id', $request->employeeid)->first();
+
 
             Log::create([
                 'user_id' => $user->user_id,
