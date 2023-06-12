@@ -19,19 +19,21 @@ class ApiController extends Controller
 
             $now = Carbon::now('Asia/Jakarta')->format('YmdHis');
 
-            // $foto = $request->file('foto');
-            // $fotoUrl = $foto->storeAs('logs', $now . '-' . rand(1000, 9999) . '.' . $foto->extension());
+            $foto = $request->file('foto');
+            $fotoUrl = $foto->storeAs('logs', $now . '-' . rand(1000, 9999) . '.' . $foto->extension());
 
             $device = Device::where('iddev', $request->id_device)->first();
 
+            $user = DB::connection('mysql')->table('musers')->where('nik', $request->nik)->first();
+
             Log::create([
-                'user_id' => $request->id_user,
+                'user_id' => $user->id,
                 'device_id' => $device->id,
                 'moustache' => $request->moustache,
                 'beard' => $request->beard,
                 'suhu' => $request->suhu,
                 'waktu' => $request->waktu,
-                'foto' => $request->foto,
+                'foto' => $fotoUrl,
             ]);
 
             DB::commit();
