@@ -192,7 +192,7 @@ class FotoKaryawanController extends Controller
 
             $gambar = file_get_contents(storage_path('/app/public/' . $person->foto));
             $gambar_format = base64_encode($gambar);
-            $id = $member->txtNik;
+            $id = $person->employe_id;
 
             $personInfo = [
                 "Name" => $member->txtName,
@@ -251,8 +251,8 @@ class FotoKaryawanController extends Controller
             "info" => array(
                 "DeviceID" => $deviceTarget,
                 "IdType" => 0,
-                "CustomizeID" => $member->txtNik,
-                "PersonUUID" => $member->txtNik,
+                "CustomizeID" => $karyawan->employe_id,
+                "PersonUUID" => $karyawan->employe_id,
             ),
             "picinfo" => $gambar_format
         );
@@ -303,8 +303,8 @@ class FotoKaryawanController extends Controller
             "info" => array(
                 "DeviceID" => $deviceTarget,
                 "IdType" => 0,
-                "CustomizeID" => $member->txtNik,
-                "PersonUUID" => $member->txtNik,
+                "CustomizeID" => $karyawan->employe_id,
+                "PersonUUID" => $karyawan->employe_id,
             ),
         );
 
