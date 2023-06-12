@@ -95,6 +95,7 @@ class FotoKaryawanController extends Controller
             $karyawan = FotoKaryawan::create([
                 'user_id' => $request->karyawan,
                 'foto' => $fotoUrl,
+                'employe_id' => 23 . rand(100, 999)
             ]);
 
             DB::commit();
