@@ -24,10 +24,10 @@ class ApiController extends Controller
 
             $device = Device::where('iddev', $request->id_device)->first();
 
-            $user = DB::connection('mysql')->table('musers')->where('txtNik', $request->nik)->first();
+            $user = DB::connection('faceid')->table('foto_karyawans')->where('employe_id', $request->employee_id)->first();
 
             Log::create([
-                'user_id' => $user->id,
+                'user_id' => $user->user_id,
                 'device_id' => $device->id,
                 'moustache' => $request->moustache,
                 'beard' => $request->beard,
