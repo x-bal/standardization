@@ -163,7 +163,9 @@
             success: function(response) {
                 let device = response.device;
 
-                $("#device").val(device.txtName)
+                $("#nama_device").val(device.nama_device)
+                $("#iddev").val(device.iddev)
+                $("#ipaddress").val(device.ipaddress)
             }
         })
     })
