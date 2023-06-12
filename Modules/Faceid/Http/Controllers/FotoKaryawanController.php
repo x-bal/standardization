@@ -175,7 +175,7 @@ class FotoKaryawanController extends Controller
     {
         $device = Device::find($request->device);
         $deviceTarget = $device->iddev;
-        $ipDevice = $device->ipaddres;
+        $ipDevice = $device->ipaddress;
 
         $personInfo = [];
 
@@ -238,7 +238,7 @@ class FotoKaryawanController extends Controller
 
         $device = Device::find($request->device);
         $deviceTarget = $device->iddev;
-        $ipDevice = $device->ipaddres;
+        $ipDevice = $device->ipaddress;
 
         $karyawan = FotoKaryawan::find($id);
         $member = DB::connection('mysql')->table('musers')->find($karyawan->user_id);
@@ -290,7 +290,7 @@ class FotoKaryawanController extends Controller
 
         $device = Device::find($request->device);
         $deviceTarget = $device->iddev;
-        $ipDevice = $device->ipaddres;
+        $ipDevice = $device->ipaddress;
 
         $karyawan = FotoKaryawan::find($id);
         $member = DB::connection('mysql')->table('musers')->find($karyawan->user_id);
