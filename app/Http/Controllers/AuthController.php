@@ -45,7 +45,7 @@ class AuthController extends BaseController
                 if ($request->has('remember')) {
                     $remember = true;
                 }
-                if(Auth::attempt(['txtUsername' => $user->txtUsername, 'password' => $request->txtPassword], $remember)){
+                if (Auth::attempt(['txtUsername' => $user->txtUsername, 'password' => $request->txtPassword], $remember)) {
                     return response()->json([
                         'status' => 'success',
                         'message' => 'Login Successfully. Wait for Redirected !'
@@ -69,7 +69,7 @@ class AuthController extends BaseController
     public function getLogout(Request $request)
     {
         Auth::logout();
-        $request->session()->invalidate();    
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect(route('auth.index'));
     }

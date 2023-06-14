@@ -30,4 +30,6 @@ Route::name('faceid.')->group(function () {
 
     Route::get('/list-device', 'DeviceController@list')->name('device.list');
     Route::resource('device', 'DeviceController');
+
+    Route::post('/setting', 'LogController@update')->name('setting');
 });

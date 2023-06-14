@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Faceid\Entities\Device;
 use Modules\Faceid\Entities\FotoKaryawan;
 use Modules\Faceid\Entities\Log;
+use Modules\Faceid\Entities\Setting;
 
 class ApiController extends Controller
 {
@@ -27,6 +28,13 @@ class ApiController extends Controller
 
             $user = FotoKaryawan::where('employe_id', $request->employeeid)->first();
 
+            $setting = Setting::find(1);
+
+            if ($request->beard == 1 && $request->moustache == 1 && $request->suhu > $setting) {
+                $status = "Healthy";
+            } else {
+                $status = "Not Healthy";
+            }
 
             Log::create([
                 'user_id' => $user->user_id,
@@ -36,6 +44,7 @@ class ApiController extends Controller
                 'suhu' => $request->suhu,
                 'waktu' => $request->waktu,
                 'foto' => $fotoUrl,
+                'status' => $status
             ]);
 
             DB::commit();

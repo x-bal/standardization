@@ -8,13 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Faceid\Entities\Log;
+use Modules\Faceid\Entities\Setting;
 use Yajra\DataTables\Facades\DataTables;
 
 class LogController extends Controller
 {
     public function index()
     {
-        return view('faceid::pages.logs.index');
+        $setting = Setting::find(1);
+
+        return view('faceid::pages.logs.index', compact('setting'));
     }
 
     public function list(Request $request)
@@ -37,11 +40,7 @@ class LogController extends Controller
                     return $actionBtn;
                 })
                 ->editColumn('txtName', function ($row) {
-                    if ($row->beard == 1 || $row->moustache == 1) {
-                        return '<span class="text-danger">' . $row->txtName . '</span>';
-                    } else {
-                        return $row->txtName;
-                    }
+                    return '<span class="text-dark">' . $row->txtName . '</span>';
                 })
                 ->editColumn('beard', function ($row) {
                     if ($row->beard == 1) {
@@ -50,10 +49,10 @@ class LogController extends Controller
                         $beard = 'No';
                     }
 
-                    if ($row->beard == 1 || $row->moustache == 1) {
-                        return '<span class="text-danger">' . $beard . '</span>';
+                    if ($row->beard == 1) {
+                        return '<span class="badge bg-success">' . $beard . '</span>';
                     } else {
-                        return $beard;
+                        return '<span class="badge bg-danger">' . $beard . '</span>';
                     }
                 })
                 ->editColumn('moustache', function ($row) {
@@ -64,18 +63,18 @@ class LogController extends Controller
                         $moustache = 'No';
                     }
 
-                    if ($row->beard == 1 || $row->moustache == 1) {
-                        return '<span class="text-danger">' . $moustache . '</span>';
+                    if ($row->moustache == 1) {
+                        return '<span class="badge bg-success">' . $moustache . '</span>';
                     } else {
-                        return $moustache;
+                        return '<span class="badge bg-danger">' . $moustache . '</span>';
                     }
                 })
                 ->editColumn('suhu', function ($row) {
-
-                    if ($row->beard == 1 || $row->moustache == 1) {
-                        return '<span class="text-danger">' . $row->suhu . '</span>';
+                    $setting = Setting::find(1);
+                    if ($row->suhu > $setting->limit) {
+                        return '<span class="badge bg-danger">' . $row->suhu . '</span>';
                     } else {
-                        return $row->suhu;
+                        return '<span class="badge bg-success">' . $row->suhu . '</span>';
                     }
                 })
                 ->editColumn('foto', function ($row) {
@@ -86,13 +85,18 @@ class LogController extends Controller
                 </a>';
                 })
                 ->editColumn('dtmCreated', function ($row) {
-                    if ($row->beard == 1 || $row->moustache == 1) {
-                        return '<span class="text-danger">' . Carbon::parse($row->waktu)->format('d/m/Y H:i:s') . '</span>';
-                    } else {
-                        return Carbon::parse($row->waktu)->format('d/m/Y H:i:s');
-                    }
+                    return '<span class="text-dark">' . Carbon::parse($row->waktu)->format('d/m/Y H:i:s') . '</span>';
                 })
-                ->rawColumns(['action', 'foto', 'txtName', 'beard', 'moustache', 'suhu', 'dtmCreated'])
+                ->editColumn('status', function ($row) {
+                    if ($row->status == "Healthy") {
+                        $status = '<span class="badge bg-success">' . $row->status . '</span>';
+                    } else {
+                        $status = '<span class="badge bg-danger">' . $row->status . '</span>';
+                    }
+
+                    return $status;
+                })
+                ->rawColumns(['action', 'foto', 'txtName', 'beard', 'moustache', 'suhu', 'dtmCreated', 'status'])
                 ->make(true);
         }
     }
@@ -102,7 +106,28 @@ class LogController extends Controller
         $log = Log::find($id);
 
         return response()->json([
-            'log' => $log
+            'log' => $log,
+            'image' => asset('/storage/' . $log->foto)
         ]);
+    }
+
+    public function update(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $setting = Setting::find(1);
+
+            $setting->update([
+                'limit' => $request->limit
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', "Limit successfully updated");
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('error', $th->getMessage());
+        }
     }
 }

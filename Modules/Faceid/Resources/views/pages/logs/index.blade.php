@@ -45,6 +45,18 @@
                         <button type="submit" class="btn btn-primary mt-1">Submit</button>
                     </div>
                 </form>
+
+                <form method="POST" class="row mb-3" action="{{ route('faceid.setting') }}">
+                    @csrf
+                    <div class="col-md-4 form-group">
+                        <label for="limit">Limit Suhu</label>
+                        <input type="number" name="limit" id="limit" class="form-control" value="{{ $setting->limit }}">
+                    </div>
+                    <div class="col-md-4 form-group mt-3">
+                        <button type="submit" class="btn btn-primary mt-1">Submit</button>
+                    </div>
+                </form>
+
                 <div class="row">
                     <!-- html -->
                     <div class="table-responsive">
@@ -58,6 +70,7 @@
                                     <th>Beard</th>
                                     <th>Moustache</th>
                                     <th>Suhu</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
 
@@ -83,7 +96,7 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <img src="" alt="" id="img-target">
+                        <img src="" alt="" id="img-target" width="100">
                     </div>
                 </div>
             </div>
@@ -181,6 +194,10 @@
                 data: 'suhu',
                 name: 'suhu'
             },
+            {
+                data: 'status',
+                name: 'status'
+            },
         ]
     });
 
@@ -224,7 +241,7 @@
             success: function(response) {
                 let log = response.log;
 
-                $("#img-target").attr("src", log.foto)
+                $("#img-target").attr("src", response.image)
             }
         })
     })

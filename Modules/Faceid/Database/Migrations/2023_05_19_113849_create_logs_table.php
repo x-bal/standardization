@@ -22,6 +22,7 @@ class CreateLogsTable extends Migration
             $table->string('foto')->nullable();
             $table->integer('suhu');
             $table->timestamp('waktu');
+            $table->enum('status', ["Healthy", "Not Healthy"])->nullable();
             $table->timestamps();
         });
     }
