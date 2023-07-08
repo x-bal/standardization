@@ -50,10 +50,11 @@
                     @csrf
                     <div class="col-md-4 form-group">
                         <label for="limit">Limit Suhu</label>
-                        <input type="number" name="limit" id="limit" class="form-control" value="{{ $setting->limit }}">
+                        <input type="text" name="limit" id="limit" class="form-control" value="{{ $setting->limit }}">
                     </div>
                     <div class="col-md-4 form-group mt-3">
                         <button type="submit" class="btn btn-primary mt-1">Submit</button>
+                        <a href="{{ route('faceid.logs.export') }}" class="btn btn-success mt-1">Export Data</a>
                     </div>
                 </form>
 
@@ -93,17 +94,37 @@
             </div>
 
 
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <img src="" alt="" id="img-target" width="100">
+            <form action="" method="post" id="form-edit">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img src="" alt="" id="img-target" width="100">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="beard">Beard</label>
+                                <select name="beard" id="beard" class="form-control">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="moustache">Moustache</label>
+                                <select name="moustache" id="moustache" class="form-control">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <a href="javascript:;" class="btn btn-white" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Close</a>
-                <a href="" class="btn btn-success btn-download"><i class="fa-solid fa-download"></i> Download</a>
-            </div>
+                <div class="modal-footer">
+                    <a href="javascript:;" class="btn btn-white" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Close</a>
+                    <a href="" class="btn btn-success btn-download"><i class="fa-solid fa-download"></i> Download</a>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Save</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -233,6 +254,9 @@
 
     $("#datatable").on('click', '.btn-action', function() {
         let route = $(this).attr('data-route')
+        let id = $(this).attr('id');
+        let url = "/faceid/log/" + id
+        $("#form-edit").attr("action", url);
 
         $.ajax({
             url: route,
@@ -242,6 +266,8 @@
                 let log = response.log;
 
                 $("#img-target").attr("src", response.image)
+                $("#beard").val(log.beard)
+                $("#moustache").val(log.moustache)
             }
         })
     })

@@ -197,7 +197,7 @@
                         success: function(response) {
                             $('#modal-login').modal('hide');
                             notification(response.status, response.message, 'bg-success');
-                            window.location.href = "/faceid";
+                            window.location.href = "{{ route('manage.user.index') }}";
                         },
                         error: function(response) {
                             if (response.status == '404' || response.status == '401') {

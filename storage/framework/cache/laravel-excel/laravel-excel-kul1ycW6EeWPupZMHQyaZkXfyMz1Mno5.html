@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+<title>Logs Foto Karyawan | Faceid</title>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+<meta content="" name="description" />
+<meta content="" name="author" />
+<link rel="shortcut icon" href="http://127.0.0.1:8001/img/logo/fav.ico" type="image/x-icon">
+
+<!-- ================== BEGIN BASE CSS STYLE ================== -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+<link href="http://127.0.0.1:8001/css/vendor.min.css" rel="stylesheet" />
+<link href="http://127.0.0.1:8001/css/apple/app.min.css" rel="stylesheet" />
+<link href="http://127.0.0.1:8001/plugins/ionicons/css/ionicons.min.css" rel="stylesheet" />
+<!-- ================== END BASE CSS STYLE ================== -->
+
+</head>
+
+<body class="">
+	<!-- BEGIN #loader -->
+<div id="loader" class="app-loader">
+	<span class="spinner"></span>
+</div>
+<!-- END #loader -->
+	<div id="app" class="app app-sidebar-fixed  app-header-fixed ">
+
+		<!-- BEGIN #header -->
+<div id="header" class="app-header ">
+	<!-- BEGIN navbar-header -->
+	<div class="navbar-header">
+				<a href="" class="navbar-brand">
+			<span class="navbar-logo">
+				<img src="http://127.0.0.1:8001/img/logo/kalbe.png" width="20" alt="kalbe logo">
+			</span>
+			<b class="me-1">Kalbe</b> <span style="color: #83bb43">Morinaga</span></a>
+										<button type="button" class="navbar-mobile-toggler" data-toggle="app-sidebar-mobile">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+			</div>
+	
+		
+	<!-- BEGIN header-nav -->
+	<div class="navbar-nav">
+		<div class="navbar-item dropdown">
+			<a href="#" data-bs-toggle="dropdown" class="navbar-link dropdown-toggle icon">
+				<i class="fa fa-bell"></i>
+				<span class="badge">5</span>
+			</a>
+			<div class="dropdown-menu media-list dropdown-menu-end">
+	<div class="dropdown-header">NOTIFICATIONS (5)</div>
+	<a href="javascript:;" class="dropdown-item media">
+		<div class="media-left">
+			<i class="fa fa-bug media-object bg-gray-500"></i>
+		</div>
+		<div class="media-body">
+			<h6 class="media-heading">Server Error Reports <i class="fa fa-exclamation-circle text-danger"></i></h6>
+			<div class="text-muted fs-10px">3 minutes ago</div>
+		</div>
+	</a>
+	<a href="javascript:;" class="dropdown-item media">
+		<div class="media-left">
+			<img src="/img/user/user-1.jpg" class="media-object" alt="" />
+			<i class="fab fa-facebook-messenger text-blue media-object-icon"></i>
+		</div>
+		<div class="media-body">
+			<h6 class="media-heading">John Smith</h6>
+			<p>Quisque pulvinar tellus sit amet sem scelerisque tincidunt.</p>
+			<div class="text-muted fs-10px">25 minutes ago</div>
+		</div>
+	</a>
+	<a href="javascript:;" class="dropdown-item media">
+		<div class="media-left">
+			<img src="/img/user/user-2.jpg" class="media-object" alt="" />
+			<i class="fab fa-facebook-messenger text-blue media-object-icon"></i>
+		</div>
+		<div class="media-body">
+			<h6 class="media-heading">Olivia</h6>
+			<p>Quisque pulvinar tellus sit amet sem scelerisque tincidunt.</p>
+			<div class="text-muted fs-10px">35 minutes ago</div>
+		</div>
+	</a>
+	<a href="javascript:;" class="dropdown-item media">
+		<div class="media-left">
+			<i class="fa fa-plus media-object bg-gray-500"></i>
+		</div>
+		<div class="media-body">
+			<h6 class="media-heading"> New User Registered</h6>
+			<div class="text-muted fs-10px">1 hour ago</div>
+		</div>
+	</a>
+	<a href="javascript:;" class="dropdown-item media">
+		<div class="media-left">
+			<i class="fa fa-envelope media-object bg-gray-500"></i>
+			<i class="fab fa-google text-warning media-object-icon fs-14px"></i>
+		</div>
+		<div class="media-body">
+			<h6 class="media-heading"> New Email From John</h6>
+			<div class="text-muted fs-10px">2 hour ago</div>
+		</div>
+	</a>
+	<div class="dropdown-footer text-center">
+		<a href="javascript:;" class="text-decoration-none">View more</a>
+	</div>
+</div>		</div>
+		
+				
+		<div class="navbar-item navbar-user dropdown">
+			<a href="#" class="navbar-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
+				<img src="http://127.0.0.1:8001/img/user/default.png" alt="" /> 
+				<span>
+					<span class="d-none d-md-inline">Superadmin</span>
+					<b class="caret"></b>
+				</span>
+			</a>
+			<div class="dropdown-menu dropdown-menu-end me-1">
+	<a href="javascript:;" class="dropdown-item">Edit Profile</a>
+	<a href="javascript:;" class="dropdown-item d-flex align-items-center">
+		Inbox
+		<span class="badge bg-danger rounded-pill ms-auto pb-4px">2</span>
+	</a>
+	<a href="javascript:;" class="dropdown-item">Calendar</a>
+	<a href="javascript:;" class="dropdown-item">Setting</a>
+	<div class="dropdown-divider"></div>
+	<a href="http://127.0.0.1:8001/logout" class="dropdown-item">Log Out</a>
+</div>		</div>
+		
+			</div>
+	<!-- END header-nav -->
+</div>
+<!-- END #header -->
+		
+		<!-- BEGIN #sidebar -->
+<div id="sidebar" class="app-sidebar ">
+	<!-- BEGIN scrollbar -->
+	<div class="app-sidebar-content" data-scrollbar="true" data-height="100%">
+		<div class="menu">
+						<div class="menu-profile">
+				<a href="javascript:;" class="menu-profile-link" data-toggle="app-sidebar-profile" data-target="#appSidebarProfileMenu">
+					<div class="menu-profile-cover with-shadow"></div>
+					<div class="menu-profile-image">
+						<img src="http://127.0.0.1:8001/img/user/default.png" alt="User Photo" />
+					</div>
+					<div class="menu-profile-info">
+						<div class="d-flex align-items-center">
+							<div class="flex-grow-1">
+								Superadmin
+							</div>
+							<div class="menu-caret ms-auto"></div>
+						</div>
+						<small>K0001</small>
+					</div>
+				</a>
+			</div>
+			<div id="appSidebarProfileMenu" class="collapse">
+				<div class="menu-item pt-5px">
+					<a href="javascript:;" class="menu-link">
+						<div class="menu-icon"><i class="fa fa-cog"></i></div>
+						<div class="menu-text">Settings</div>
+					</a>
+				</div>
+				<div class="menu-item">
+					<a href="javascript:;" class="menu-link">
+						<div class="menu-icon"><i class="fa fa-pencil-alt"></i></div>
+						<div class="menu-text"> Send Feedback</div>
+					</a>
+				</div>
+				<div class="menu-item pb-5px">
+					<a href="javascript:;" class="menu-link">
+						<div class="menu-icon"><i class="fa fa-question-circle"></i></div>
+						<div class="menu-text"> Helps</div>
+					</a>
+				</div>
+				<div class="menu-divider m-0"></div>
+			</div>
+			
+						<div class="menu-header">Navigation</div>
+			<div class="menu-item ">
+				<a href="/faceid" class="menu-link">
+					<div class="menu-icon">
+						<i class="ion-md-analytics bg-gradient-green"></i>
+					</div>
+					<div class="menu-text">Dashboard</div>
+				</a>
+			</div>
+
+			<div class="menu-item ">
+				<a href="http://127.0.0.1:8001/faceid/device" class="menu-link">
+					<div class="menu-icon">
+						<i class="ion-md-list-box bg-gradient-blue"></i>
+					</div>
+					<div class="menu-text">Data Device</div>
+				</a>
+			</div>
+
+			<div class="menu-item ">
+				<a href="http://127.0.0.1:8001/faceid/karyawan" class="menu-link">
+					<div class="menu-icon">
+						<i class="ion-md-list-box bg-gradient-blue"></i>
+					</div>
+					<div class="menu-text">Data Karyawan</div>
+				</a>
+			</div>
+
+			<div class="menu-item ">
+				<a href="http://127.0.0.1:8001/faceid/logs" class="menu-link">
+					<div class="menu-icon">
+						<i class="ion-md-clock bg-gradient-purple"></i>
+					</div>
+					<div class="menu-text">Log History</div>
+				</a>
+			</div>
+			<!-- BEGIN minify-button -->
+			<div class="menu-item d-flex">
+				<a href="javascript:;" class="app-sidebar-minify-btn ms-auto" data-toggle="app-sidebar-minify"><i class="fa fa-angle-double-left"></i></a>
+			</div>
+			<!-- END minify-button -->
+
+		</div>
+		<!-- END menu -->
+	</div>
+	<!-- END scrollbar -->
+</div>
+<div class="app-sidebar-bg"></div>
+<div class="app-sidebar-mobile-backdrop"><a href="#" data-dismiss="app-sidebar-mobile" class="stretched-link"></a></div>
+<!-- END #sidebar -->
+		
+
+		<div id="content" class="app-content ">
+			<table>
+    <thead>
+        <tr>
+            <th colspan="9"></th>
+            <th>Diambil dari compare capture suhu vs standard < 37,3 </th>
+            <th>Diambil dengan kondisi jika salah satu kumis atau jenggot tidak NOK maka hasilnya NOK, untuk OK harus keduaya OK</th>
+        </tr>
+        <tr>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+            <th>9</th>
+            <th>10</th>
+            <th>11</th>
+        </tr>
+        <tr>
+            <th>Tanggal Absen</th>
+            <th>Jam Absen</th>
+            <th>Nik</th>
+            <th>Nama Karyawan</th>
+            <th>Nama Dept</th>
+            <th>Status Kumis</th>
+            <th>Status Jenggot</th>
+            <th>Suhu</th>
+            <th>Komitmen</th>
+            <th>Kondisi Sehat</th>
+            <th>Kondisi GMP</th>
+        </tr>
+    </thead>
+</table>
+		</div>
+
+		<!-- BEGIN scroll-top-btn -->
+<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top" data-toggle="scroll-to-top"><i class="fa fa-angle-up"></i></a>
+<!-- END scroll-top-btn -->
+		
+
+	</div>
+
+	
+	<!-- ================== BEGIN core-js ================== -->
+<script src="http://127.0.0.1:8001/js/vendor.min.js"></script>
+<script src="http://127.0.0.1:8001/js/app.min.js"></script>
+<!-- ================== END core-js ================== -->
+
+
+</body>
+
+</html>

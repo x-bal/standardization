@@ -2,11 +2,12 @@
 
 namespace Modules\Faceid\Http\Controllers;
 
+use App\Exports\LogFaceidExport;
 use Carbon\Carbon;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Modules\Faceid\Entities\Log;
 use Modules\Faceid\Entities\Setting;
 use Yajra\DataTables\Facades\DataTables;
@@ -50,9 +51,9 @@ class LogController extends Controller
                     }
 
                     if ($row->beard == 1) {
-                        return '<span class="badge bg-success">' . $beard . '</span>';
-                    } else {
                         return '<span class="badge bg-danger">' . $beard . '</span>';
+                    } else {
+                        return '<span class="badge bg-success">' . $beard . '</span>';
                     }
                 })
                 ->editColumn('moustache', function ($row) {
@@ -64,9 +65,9 @@ class LogController extends Controller
                     }
 
                     if ($row->moustache == 1) {
-                        return '<span class="badge bg-success">' . $moustache . '</span>';
-                    } else {
                         return '<span class="badge bg-danger">' . $moustache . '</span>';
+                    } else {
+                        return '<span class="badge bg-success">' . $moustache . '</span>';
                     }
                 })
                 ->editColumn('suhu', function ($row) {
@@ -78,7 +79,7 @@ class LogController extends Controller
                     }
                 })
                 ->editColumn('foto', function ($row) {
-                    return '<a href="#modal-dialog" id="" class="btn-action" data-route="' . route('faceid.logs.show', $row->id) . '" data-bs-toggle="modal">
+                    return '<a href="#modal-dialog" id="' . $row->id . '" class="btn-action" data-route="' . route('faceid.logs.show', $row->id) . '" data-bs-toggle="modal">
                     <div class="menu-profile-image">
                         <img src="' . asset('/storage/' . $row->foto) . '" alt="User Photo" width="50">
                     </div>
@@ -129,5 +130,81 @@ class LogController extends Controller
             DB::rollBack();
             return back()->with('error', $th->getMessage());
         }
+    }
+
+    public function updateLog(Request $request, Log $log)
+    {
+        $beard = $request->beard;
+        $moustache = $request->moustache;
+        $setting = Setting::find(1);
+
+        if ($beard == 0 && $moustache == 0 && $log->suhu < $setting->limit) {
+            $status = "Healthy";
+        } else {
+            $status = "Not Healthy";
+        }
+
+        try {
+            DB::beginTransaction();
+            $log->update([
+                'beard' => $beard,
+                'moustache' => $moustache,
+                'status' => $status,
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', "Log successfully updated");
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function export(Request $request)
+    {
+        $data = [];
+
+        $logs = DB::table('standardization.musers as users')
+            ->join('faceid.logs as log', 'log.user_id', '=', 'users.id')
+            ->join('standardization.mdepartments as department', 'users.intDepartment_ID', '=', 'department.intDepartment_ID')
+            ->select(['log.waktu', 'users.txtNik', 'users.txtName', 'department.txtDepartmentName', 'log.moustache', 'log.beard', 'log.suhu', 'log.status'])->get();
+
+        foreach ($logs as $log) {
+            $kondisi = '';
+            $gmp = '';
+            $moustache = '';
+            $beard = '';
+
+            if ($log->moustache == 0) {
+                $moustache = 'OK';
+            } else {
+                $moustache = 'NOK';
+            }
+
+            if ($log->beard == 0) {
+                $beard = 'OK';
+            } else {
+                $beard = 'NOK';
+            }
+
+            if ($log->status == 'Healthy') {
+                $kondisi = 'OK';
+            } else {
+                $kondisi = 'NOK';
+            }
+
+            if ($log->moustache == 0 && $log->beard == 0) {
+                $gmp = 'OK';
+            } else {
+                $gmp = 'NOK';
+            }
+
+            $data[] = [Carbon::parse($log->waktu)->format('d-F-y'), Carbon::parse($log->waktu)->format('H.i'), $log->txtNik, $log->txtName, $log->txtDepartmentName, $moustache, $beard, $log->suhu, 'Ya', $kondisi, $gmp];
+        }
+
+        // return $data;
+
+        return Excel::download(new LogFaceidExport($data), 'logs_export.xlsx');
     }
 }

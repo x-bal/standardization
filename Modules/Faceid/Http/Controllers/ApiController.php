@@ -30,7 +30,7 @@ class ApiController extends Controller
 
             $setting = Setting::find(1);
 
-            if ($request->beard == 1 && $request->moustache == 1 && $request->suhu > $setting) {
+            if ($request->beard == 0 && $request->moustache == 0 && $request->suhu < $setting->limit) {
                 $status = "Healthy";
             } else {
                 $status = "Not Healthy";

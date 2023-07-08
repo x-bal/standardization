@@ -27,6 +27,8 @@ Route::name('faceid.')->group(function () {
     Route::get('/logs', 'LogController@index')->name('logs.index');
     Route::get('/list-log', 'LogController@list')->name('logs.list');
     Route::get('/log/{log:id}', 'LogController@show')->name('logs.show');
+    Route::post('/log/{log:id}', 'LogController@updateLog')->name('logs.updateLog');
+    Route::get('/export', 'LogController@export')->name('logs.export');
 
     Route::get('/list-device', 'DeviceController@list')->name('device.list');
     Route::resource('device', 'DeviceController');
