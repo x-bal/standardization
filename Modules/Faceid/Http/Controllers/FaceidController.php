@@ -4,6 +4,7 @@ namespace Modules\Faceid\Http\Controllers;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use DateTime;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -26,36 +27,63 @@ class FaceidController extends Controller
         $temps = [];
         $users = [];
         $userid = [];
+        $gmpok = [];
+        $gmpnok = [];
+        $totalDaily = [];
 
-        if ($request->month) {
+        if ($request->month || $request->from && $request->to) {
             $year = explode('-', $request->month)[0];
             $month = explode('-', $request->month)[1];
-            $startDate = Carbon::parse($request->month)->startOfMonth()->format('Y-m-d');
-            $endDate = Carbon::parse($request->month)->endOfMonth()->format('Y-m-d');
+            $startDate = Carbon::create($request->from);
+            $endDate = Carbon::create($request->to);
+            $startMonth = Carbon::parse($request->month)->startOfMonth();
+            $endMonth = Carbon::parse($request->month)->endOfMonth();
         } else {
             $year = Carbon::now('Asia/Jakarta')->format('Y');
             $month = Carbon::now('Asia/Jakarta')->format('m');
-            $startDate = Carbon::now('Asia/Jakarta')->startOfMonth()->format('Y-m-d');
-            $endDate = Carbon::now('Asia/Jakarta')->endOfMonth()->format('Y-m-d');
+            $startDate = Carbon::now('Asia/Jakarta')->startOfMonth();
+            $endDate = Carbon::now('Asia/Jakarta')->endOfMonth();
+            $startMonth = Carbon::now('Asia/Jakarta')->startOfMonth();
+            $endMonth = Carbon::now('Asia/Jakarta')->endOfMonth();
         }
 
-        $periode = CarbonPeriod::create($startDate, $endDate);
+        $dateList = [];
+        $newdateList = [];
 
-        foreach ($periode as $period) {
-            $dailyhealth[] = Log::where('status', "Healthy")->whereDate('waktu', $period->format('Y-m-d'))->count();
-            $dailynothealth[] = Log::where('status', "Not Healthy")->whereDate('waktu', $period->format('Y-m-d'))->count();
-            $dates[] = $period->format('M d Y');
+        for ($date = $startMonth; $date->lte($endMonth); $date->addDay()) {
+            $dateList[] = $date->format('Y-m-d');
         }
 
+
+        for ($newdate = $startDate; $newdate->lte($endDate); $newdate->addDay()) {
+            $newdateList[] = $newdate->format('Y-m-d');
+        }
+
+        foreach ($dateList as $period) {
+            $totalDaily[] = Log::whereDate('waktu', $period)->groupBy('user_id')->count();
+            $dates[] = $period;
+        }
+
+        foreach ($newdateList as $tgl) {
+            $dailyhealth[] = Log::where('status', "Healthy")->whereDate('waktu', $tgl)->count();
+            $dailynothealth[] = Log::where('status', "Not Healthy")->whereDate('waktu', $tgl)->count();
+            $gmpok[] = Log::where(['moustache' => 0, 'beard' => 0])->whereDate('waktu', $tgl)->count();
+            $gmpnok[] = Log::where(['moustache' => 1, 'beard' => 1])->whereDate('waktu', $tgl)->count();
+        }
+
+
+        // return $dateList;
         $counthealth = Log::where('status', "Healthy")->whereYear('waktu', $year)->whereMonth('waktu', $month)->count();
         $countnothealth = Log::where('status', "Not Healthy")->whereYear('waktu', $year)->whereMonth('waktu', $month)->count();
+
         $userid = DB::table('standardization.musers as users')->pluck('users.id');
+
         foreach ($userid as $id) {
             $temps[] = Log::where('user_id', $id)->whereYear('waktu', $year)->whereMonth('waktu', $month)->latest()->first()->suhu ?? 0;
             $users[] = DB::table('faceid.logs as logs')->join('standardization.musers as users', 'logs.user_id', '=', 'users.id')->where("logs.user_id", $id)->first()->txtName ?? '-';
         }
 
-        return view('faceid::index', compact('counthealth', 'countnothealth', 'dailyhealth', 'dailynothealth', 'dates', 'temps', 'users'));
+        return view('faceid::index', compact('counthealth', 'countnothealth', 'dailyhealth', 'dailynothealth', 'dates', 'temps', 'users', 'gmpok', 'gmpnok', 'newdateList', 'totalDaily'));
     }
 
     /**

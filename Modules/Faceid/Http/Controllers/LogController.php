@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Modules\Faceid\Entities\Log;
 use Modules\Faceid\Entities\Setting;
 use Yajra\DataTables\Facades\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LogController extends Controller
 {
@@ -165,10 +166,20 @@ class LogController extends Controller
     {
         $data = [];
 
-        $logs = DB::table('standardization.musers as users')
-            ->join('faceid.logs as log', 'log.user_id', '=', 'users.id')
-            ->join('standardization.mdepartments as department', 'users.intDepartment_ID', '=', 'department.intDepartment_ID')
-            ->select(['log.waktu', 'users.txtNik', 'users.txtName', 'department.txtDepartmentName', 'log.moustache', 'log.beard', 'log.suhu', 'log.status'])->get();
+        if ($request->from != null && $request->to != null) {
+            $to = Carbon::parse($request->to)->addDay(1)->format('Y-m-d');
+
+            $logs = DB::table('standardization.musers as users')
+                ->join('faceid.logs as log', 'log.user_id', '=', 'users.id')
+                ->join('standardization.mdepartments as department', 'users.intDepartment_ID', '=', 'department.intDepartment_ID')
+                ->whereBetween('log.waktu', [$request->from, $to])
+                ->select(['log.waktu', 'users.txtNik', 'users.txtName', 'department.txtDepartmentName', 'log.moustache', 'log.beard', 'log.suhu', 'log.status'])->get();
+        } else {
+            $logs = DB::table('standardization.musers as users')
+                ->join('faceid.logs as log', 'log.user_id', '=', 'users.id')
+                ->join('standardization.mdepartments as department', 'users.intDepartment_ID', '=', 'department.intDepartment_ID')
+                ->select(['log.waktu', 'users.txtNik', 'users.txtName', 'department.txtDepartmentName', 'log.moustache', 'log.beard', 'log.suhu', 'log.status'])->get();
+        }
 
         foreach ($logs as $log) {
             $kondisi = '';
@@ -206,5 +217,63 @@ class LogController extends Controller
         // return $data;
 
         return Excel::download(new LogFaceidExport($data), 'logs_export.xlsx');
+    }
+
+    public function pdf(Request $request)
+    {
+        $data = [];
+
+        if ($request->from != null && $request->to != null) {
+            $to = Carbon::parse($request->to)->addDay(1)->format('Y-m-d');
+
+            $logs = DB::table('standardization.musers as users')
+                ->join('faceid.logs as log', 'log.user_id', '=', 'users.id')
+                ->join('standardization.mdepartments as department', 'users.intDepartment_ID', '=', 'department.intDepartment_ID')
+                ->whereBetween('log.waktu', [$request->from, $to])
+                ->select(['log.waktu', 'users.txtNik', 'users.txtName', 'department.txtDepartmentName', 'log.moustache', 'log.beard', 'log.suhu', 'log.status'])->get();
+        } else {
+            $logs = DB::table('standardization.musers as users')
+                ->join('faceid.logs as log', 'log.user_id', '=', 'users.id')
+                ->join('standardization.mdepartments as department', 'users.intDepartment_ID', '=', 'department.intDepartment_ID')
+                ->select(['log.waktu', 'users.txtNik', 'users.txtName', 'department.txtDepartmentName', 'log.moustache', 'log.beard', 'log.suhu', 'log.status'])->get();
+        }
+
+        foreach ($logs as $log) {
+            $kondisi = '';
+            $gmp = '';
+            $moustache = '';
+            $beard = '';
+
+            if ($log->moustache == 0) {
+                $moustache = 'OK';
+            } else {
+                $moustache = 'NOK';
+            }
+
+            if ($log->beard == 0) {
+                $beard = 'OK';
+            } else {
+                $beard = 'NOK';
+            }
+
+            if ($log->status == 'Healthy') {
+                $kondisi = 'OK';
+            } else {
+                $kondisi = 'NOK';
+            }
+
+            if ($log->moustache == 0 && $log->beard == 0) {
+                $gmp = 'OK';
+            } else {
+                $gmp = 'NOK';
+            }
+
+            $data[] = [Carbon::parse($log->waktu)->format('d-F-y'), Carbon::parse($log->waktu)->format('H.i'), $log->txtNik, $log->txtName, $log->txtDepartmentName, $moustache, $beard, $log->suhu, 'Ya', $kondisi, $gmp];
+        }
+
+        $pdf = PDF::setOption(['dpi' => 150, 'defaultFont' => 'sans-serif'])->loadView('faceid::pages.logs.export', array('data' =>  $data))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('log-details.pdf');
     }
 }

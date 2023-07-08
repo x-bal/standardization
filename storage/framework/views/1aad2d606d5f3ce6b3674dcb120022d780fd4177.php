@@ -53,7 +53,8 @@
                     </div>
                     <div class="col-md-4 form-group mt-3">
                         <button type="submit" class="btn btn-primary mt-1">Submit</button>
-                        <a href="<?php echo e(route('faceid.logs.export')); ?>" class="btn btn-success mt-1">Export Data</a>
+                        <a href="<?php echo e(route('faceid.logs.export')); ?>?from=<?php echo e(request('from')); ?>&to=<?php echo e(request('to')); ?>" class="btn btn-success mt-1">Export Excel</a>
+                        <a href="<?php echo e(route('faceid.logs.pdf')); ?>?from=<?php echo e(request('from')); ?>&to=<?php echo e(request('to')); ?>" class="btn btn-success mt-1">Export PDF</a>
                     </div>
                 </form>
 
@@ -170,20 +171,20 @@
         },
         deferRender: true,
         pagination: true,
-        dom: 'Bfrtip',
-        buttons: [{
-                extend: 'csv',
-                className: 'btn-sm'
-            },
-            {
-                extend: 'excel',
-                className: 'btn-sm btn-success'
-            },
-            {
-                extend: 'pdf',
-                className: 'btn-sm btn-danger'
-            }
-        ],
+        // dom: 'Bfrtip',
+        // buttons: [{
+        //         extend: 'csv',
+        //         className: 'btn-sm'
+        //     },
+        //     {
+        //         extend: 'excel',
+        //         className: 'btn-sm btn-success'
+        //     },
+        //     {
+        //         extend: 'pdf',
+        //         className: 'btn-sm btn-danger'
+        //     }
+        // ],
         columns: [{
                 data: 'DT_RowIndex',
                 name: 'DT_RowIndex',

@@ -54,7 +54,8 @@
                     </div>
                     <div class="col-md-4 form-group mt-3">
                         <button type="submit" class="btn btn-primary mt-1">Submit</button>
-                        <a href="{{ route('faceid.logs.export') }}" class="btn btn-success mt-1">Export Data</a>
+                        <a href="{{ route('faceid.logs.export') }}?from={{ request('from') }}&to={{ request('to') }}" class="btn btn-success mt-1">Excel</a>
+                        {{-- <a href="{{ route('faceid.logs.pdf') }}?from={{ request('from') }}&to={{ request('to') }}" class="btn btn-success mt-1">Export PDF</a> --}}
                     </div>
                 </form>
 
@@ -171,20 +172,20 @@
         },
         deferRender: true,
         pagination: true,
-        dom: 'Bfrtip',
-        buttons: [{
-                extend: 'csv',
-                className: 'btn-sm'
-            },
-            {
-                extend: 'excel',
-                className: 'btn-sm btn-success'
-            },
-            {
-                extend: 'pdf',
-                className: 'btn-sm btn-danger'
-            }
-        ],
+        // dom: 'Bfrtip',
+        // buttons: [{
+        //         extend: 'csv',
+        //         className: 'btn-sm'
+        //     },
+        //     {
+        //         extend: 'excel',
+        //         className: 'btn-sm btn-success'
+        //     },
+        //     {
+        //         extend: 'pdf',
+        //         className: 'btn-sm btn-danger'
+        //     }
+        // ],
         columns: [{
                 data: 'DT_RowIndex',
                 name: 'DT_RowIndex',
