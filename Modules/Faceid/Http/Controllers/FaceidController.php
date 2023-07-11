@@ -30,6 +30,7 @@ class FaceidController extends Controller
         $gmpok = [];
         $gmpnok = [];
         $totalDaily = [];
+        $departments = DB::table('standardization.mdepartments')->get();
 
         if ($request->month || $request->from && $request->to) {
             $year = explode('-', $request->month)[0];
@@ -83,7 +84,7 @@ class FaceidController extends Controller
             $users[] = DB::table('faceid.logs as logs')->join('standardization.musers as users', 'logs.user_id', '=', 'users.id')->where("logs.user_id", $id)->first()->txtName ?? '-';
         }
 
-        return view('faceid::index', compact('counthealth', 'countnothealth', 'dailyhealth', 'dailynothealth', 'dates', 'temps', 'users', 'gmpok', 'gmpnok', 'newdateList', 'totalDaily'));
+        return view('faceid::index', compact('counthealth', 'countnothealth', 'dailyhealth', 'dailynothealth', 'dates', 'temps', 'users', 'gmpok', 'gmpnok', 'newdateList', 'totalDaily', 'departments'));
     }
 
     /**

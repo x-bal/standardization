@@ -18,20 +18,31 @@ class LogController extends Controller
     public function index()
     {
         $setting = Setting::find(1);
+        $departments = DB::table('standardization.mdepartments')->get();
 
-        return view('faceid::pages.logs.index', compact('setting'));
+        return view('faceid::pages.logs.index', compact('setting', 'departments'));
     }
 
     public function list(Request $request)
     {
         if ($request->ajax()) {
 
-            if ($request->from || $request->to) {
+            if ($request->from || $request->to || $request->department) {
                 $to = Carbon::parse($request->to)->addDay(1)->format('Y-m-d');
 
-                $data = DB::table('standardization.musers as users')->join('faceid.logs as log', 'log.user_id', '=', 'users.id')->whereBetween('waktu', [$request->from, $to]);
+                $department = $request->department;
+
+                $data = DB::table('standardization.musers as users')
+                    ->join('faceid.logs as log', 'log.user_id', '=', 'users.id')
+                    ->join('standardization.mdepartments as department', 'users.intDepartment_ID', '=', 'department.intDepartment_ID')
+                    ->when($request->has('department') && $department != 'all', function ($query) use ($department) {
+                        $query->where('users.intDepartment_ID', $department);
+                    })
+                    ->whereBetween('waktu', [$request->from, $to]);
             } else {
-                $data = DB::table('standardization.musers as users')->join('faceid.logs as log', 'log.user_id', '=', 'users.id');
+                $data = DB::table('standardization.musers as users')
+                    ->join('faceid.logs as log', 'log.user_id', '=', 'users.id')
+                    ->join('standardization.mdepartments as department', 'users.intDepartment_ID', '=', 'department.intDepartment_ID');
             }
 
             return DataTables::query($data)
@@ -166,12 +177,16 @@ class LogController extends Controller
     {
         $data = [];
 
-        if ($request->from != null && $request->to != null) {
+        if ($request->from != null && $request->to != null || $request->department) {
             $to = Carbon::parse($request->to)->addDay(1)->format('Y-m-d');
+            $department = $request->department;
 
             $logs = DB::table('standardization.musers as users')
                 ->join('faceid.logs as log', 'log.user_id', '=', 'users.id')
                 ->join('standardization.mdepartments as department', 'users.intDepartment_ID', '=', 'department.intDepartment_ID')
+                ->when($request->has('department') && $department != 'all', function ($query) use ($department) {
+                    $query->where('users.intDepartment_ID', $department);
+                })
                 ->whereBetween('log.waktu', [$request->from, $to])
                 ->select(['log.waktu', 'users.txtNik', 'users.txtName', 'department.txtDepartmentName', 'log.moustache', 'log.beard', 'log.suhu', 'log.status'])->get();
         } else {

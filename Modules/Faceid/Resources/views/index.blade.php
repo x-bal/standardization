@@ -41,6 +41,16 @@
             </div>
 
             <div class="form-group col-md-3 mb-3">
+                <label for="department">Department</label>
+                <select name="department" id="department" class="form-control">
+                    <option selected>-- All Department --</option>
+                    @foreach($departments as $dept)
+                    <option value="{{ $dept->intDepartment_ID }}" {{ request('department') == $dept->intDepartment_ID ? 'selected' : '' }}>{{ $dept->txtDepartmentName }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group col-md-3 mb-3">
                 <button type="submit" class="btn btn-primary mt-3">Submit</button>
             </div>
         </form>
@@ -59,7 +69,7 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="text-center">Rekap Status Health per-Tanggal</h5>
+                                <h5 class="text-center">Rekap Status Hygiene Declare per-Tanggal</h5>
                                 <canvas id="count-health"></canvas>
                             </div>
                         </div>
@@ -68,7 +78,7 @@
                     <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="text-center">Health Declare</h5>
+                                <h5 class="text-center">Hygiene Declare</h5>
                                 <canvas id="health-chart"></canvas>
                             </div>
                         </div>

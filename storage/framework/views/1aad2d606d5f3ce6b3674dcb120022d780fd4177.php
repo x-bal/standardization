@@ -32,33 +32,44 @@
             </div>
             <div class="panel-body">
                 <form method="GET" class="row mb-3">
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
                         <label for="from">From</label>
-                        <input type="date" name="from" id="from" class="form-control" value="<?php echo e(request('from')); ?>">
+                        <input type="date" name="from" id="from" class="form-control" value="<?php echo e(request('from') ?? Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d')); ?>">
                     </div>
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
                         <label for="to">To</label>
-                        <input type="date" name="to" id="to" class="form-control" value="<?php echo e(request('to')); ?>">
+                        <input type="date" name="to" id="to" class="form-control" value="<?php echo e(request('to') ?? Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d')); ?>">
                     </div>
-                    <div class="col-md-4 form-group mt-3">
-                        <button type="submit" class="btn btn-primary mt-1">Submit</button>
+                    <div class="col-md-3 form-group">
+                        <label for="department">Separtment</label>
+                        <select name="department" id="department" class="form-control">
+                            <option value="all" selected>-- All Department --</option>
+                            <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dept): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($dept->intDepartment_ID); ?>" <?php echo e(request('department') == $dept->intDepartment_ID ? 'selected' : ''); ?>><?php echo e($dept->txtDepartmentName); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3 form-group mt-3">
+                        <button type="submit" class="btn btn-primary mt-1"><i class="fas fa-filter"></i> Filter</button>
                     </div>
                 </form>
 
                 <form method="POST" class="row mb-3" action="<?php echo e(route('faceid.setting')); ?>">
                     <?php echo csrf_field(); ?>
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
                         <label for="limit">Limit Suhu</label>
                         <input type="text" name="limit" id="limit" class="form-control" value="<?php echo e($setting->limit); ?>">
                     </div>
                     <div class="col-md-4 form-group mt-3">
-                        <button type="submit" class="btn btn-primary mt-1">Submit</button>
-                        <a href="<?php echo e(route('faceid.logs.export')); ?>?from=<?php echo e(request('from')); ?>&to=<?php echo e(request('to')); ?>" class="btn btn-success mt-1">Export Excel</a>
-                        <a href="<?php echo e(route('faceid.logs.pdf')); ?>?from=<?php echo e(request('from')); ?>&to=<?php echo e(request('to')); ?>" class="btn btn-success mt-1">Export PDF</a>
+                        <button type="submit" class="btn btn-primary mt-1"><i class="fas fa-sync"></i> Update</button>
                     </div>
                 </form>
 
                 <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="<?php echo e(route('faceid.logs.export')); ?>?from=<?php echo e(request('from')); ?>&to=<?php echo e(request('to')); ?>&department=<?php echo e(request('department')); ?>" class="btn btn-success mt-1"><i class="fas fa-file-excel"></i> Export</a>
+                        
+                    </div>
                     <!-- html -->
                     <div class="table-responsive">
                         <table id="datatable" class="table table-striped table-bordered align-middle">
@@ -67,7 +78,9 @@
                                     <th>#</th>
                                     <th>Foto</th>
                                     <th>Date Created</th>
-                                    <th>Karyawan</th>
+                                    <th>Nama Karyawan</th>
+                                    <th>Nik</th>
+                                    <th>Nama Dept</th>
                                     <th>Beard</th>
                                     <th>Moustache</th>
                                     <th>Suhu</th>
@@ -156,6 +169,7 @@
 <script>
     let from = $("#from").val();
     let to = $("#to").val();
+    let department = $("#department").val();
 
     var table = $('#datatable').DataTable({
         processing: true,
@@ -166,7 +180,8 @@
             type: "GET",
             data: {
                 "from": from,
-                "to": to
+                "to": to,
+                "department": department,
             }
         },
         deferRender: true,
@@ -202,6 +217,14 @@
             {
                 data: 'txtName',
                 name: 'txtName'
+            },
+            {
+                data: 'txtNik',
+                name: 'txtNik'
+            },
+            {
+                data: 'txtDepartmentName',
+                name: 'txtDepartmentName'
             },
             {
                 data: 'beard',
