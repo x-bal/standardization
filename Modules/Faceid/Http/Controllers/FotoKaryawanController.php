@@ -19,7 +19,7 @@ class FotoKaryawanController extends Controller
     {
         $fotoId = DB::connection('faceid')->table('foto_karyawans')->pluck('user_id');
 
-        $karyawan = DB::connection('mysql')->table('musers')->whereNotIn('id', $fotoId)->get();
+        $karyawan = DB::connection('mysql')->table('musers')->whereNotIn('id', $fotoId)->orderBy('txtName', 'ASC')->get();
         $devices = Device::get();
 
         return view('faceid::pages.karyawan.index', compact('karyawan', 'devices'));
