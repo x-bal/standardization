@@ -103,7 +103,7 @@ class FotoKaryawanController extends Controller
             return back()->with('success', "Foto karyawan berhasil diupload");
         } catch (\Throwable $th) {
             DB::rollBack();
-            return back()->with('error', $th->getMessage());
+            return $th->getMessage();
         }
     }
 
