@@ -5,6 +5,7 @@
 <link href="<?php echo e(asset('/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css')); ?>" rel="stylesheet" />
 <link href="<?php echo e(asset('/plugins/gritter/css/jquery.gritter.css')); ?>" rel="stylesheet" />
 <link href="<?php echo e(asset('/plugins/select-picker/dist/picker.min.css')); ?>" rel="stylesheet" />
+<link href="<?php echo e(asset('/')); ?>plugins/select2/dist/css/select2.min.css" rel="stylesheet" />
 <?php $__env->stopPush(); ?>
 <?php $__env->startSection('content'); ?>
 <!-- BEGIN breadcrumb -->
@@ -90,7 +91,7 @@
                 <div class="modal-body">
                     <div class="form-group karyawan mb-3">
                         <label for="karyawan">Karyawan</label>
-                        <select name="karyawan" id="karyawan" class="form-control">
+                        <select name="karyawan" id="karyawan" class="form-control default-select2">
                             <option disabled selected>-- Pilih Karyawan --</option>
                             <?php $__currentLoopData = $karyawan; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $kry): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <option value="<?php echo e($kry->id); ?>"><?php echo e($kry->txtName); ?></option>
@@ -160,8 +161,13 @@
 <script src="<?php echo e(asset('/plugins/select-picker/dist/picker.min.js')); ?>"></script>
 <script src="<?php echo e(asset('/plugins/sweetalert/dist/sweetalert.min.js')); ?>"></script>
 <script src="<?php echo e(asset('/plugins/gritter/js/jquery.gritter.js')); ?>"></script>
+<script src="<?php echo e(asset('/')); ?>plugins/select2/dist/js/select2.min.js"></script>
 
 <script>
+    $(".default-select2").select2({
+        dropdownParent: $('#modal-test')
+    });
+
     var table = $('#datatable').DataTable({
         processing: true,
         serverSide: true,

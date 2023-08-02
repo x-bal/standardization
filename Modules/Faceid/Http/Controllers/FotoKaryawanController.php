@@ -3,11 +3,9 @@
 namespace Modules\Faceid\Http\Controllers;
 
 use Carbon\Carbon;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Modules\Faceid\Entities\Device;
 use Modules\Faceid\Entities\FotoKaryawan;

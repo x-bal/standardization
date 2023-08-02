@@ -19,3 +19,4 @@ Route::middleware('auth:api')->get('/faceid', function (Request $request) {
 });
 
 Route::post('/store', 'ApiController@store');
+Route::get('/karyawan', 'ApiController@karyawan');
