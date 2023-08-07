@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Modules\Faceid\Entities\Device;
 use Modules\Faceid\Entities\FotoKaryawan;
@@ -15,9 +16,34 @@ class FotoKaryawanController extends Controller
 {
     public function index()
     {
+        $response = Http::get('http://localhost:8002/faceid/api/karyawan'); // Sesuaikan URL sesuai dengan alamat API yang benar
+
+        $dataFromApi = $response->json()['data'];
+
+        $karyawan = collect($dataFromApi)->map(function ($item) {
+            return (object) [
+                'id' => $item['id'],
+                'intLevel_ID' => $item['relationships']['level']['intidlevel'],
+                'intDepartment_ID' => $item['relationships']['departemen']['intiddepartemen'],
+                'intSubdepartment_ID' => $item['relationships']['subdepartemen']['intidsubdepartemen'],
+                'intCg_ID' => $item['relationships']['cg']['intidcg'],
+                'intJabatan_ID' => $item['relationships']['jabatan']['intidjabatan'],
+                'txtName' => $item['nama'],
+                'txtNik' => $item['nik'],
+                'txtUsername' => $item['username'],
+                'txtInitial' => $item['inisial'],
+                'txtEmail' => $item['email'],
+                'ext' => $item['ext'],
+                'gambarprofile' => $item['gambarprofile'],
+            ];
+        });
+
         $fotoId = DB::connection('faceid')->table('foto_karyawans')->pluck('user_id');
 
-        $karyawan = DB::connection('mysql')->table('musers')->whereNotIn('id', $fotoId)->orderBy('txtName', 'ASC')->get();
+        $karyawan = $karyawan->reject(function ($item) use ($fotoId) {
+            return $fotoId->contains($item->id);
+        });
+
         $devices = Device::get();
 
         return view('faceid::pages.karyawan.index', compact('karyawan', 'devices'));
@@ -26,7 +52,23 @@ class FotoKaryawanController extends Controller
     public function list(Request $request)
     {
         if ($request->ajax()) {
-            $data = DB::table('standardization.musers as users')->join('faceid.foto_karyawans as foto', 'foto.user_id', '=', 'users.id')->get(['txtName', 'created_at', 'foto', 'foto.id', 'is_export', 'is_edit']);
+            // $data = DB::table('standardization.musers as users')->join('faceid.foto_karyawans as foto', 'foto.user_id', '=', 'users.id')->get(['txtName', 'created_at', 'foto', 'foto.id', 'is_export', 'is_edit']);
+
+            $faceIdData = DB::table('faceid.foto_karyawans')->get();
+
+            $data = $faceIdData->map(function ($item) {
+                $response = Http::get('http://localhost:8002/faceid/api/karyawan');
+                $karyawanData = collect($response->json()['data'])->firstWhere('id', $item->user_id);
+                return  (object)[
+                    'txtName' => $karyawanData['nama'],
+                    'created_at' => $item->created_at,
+                    'foto' => $item->foto,
+                    'id' => $item->id,
+                    'is_export' => $item->is_export,
+                    'is_edit' => $item->is_edit,
+                ];
+            });
+
 
             return DataTables::of($data)
                 ->addIndexColumn()

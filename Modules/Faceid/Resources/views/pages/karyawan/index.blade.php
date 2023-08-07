@@ -98,11 +98,19 @@
                             <option value="{{ $kry->id }}">{{ $kry->txtName }}</option>
                             @endforeach
                         </select>
+
+                        @error('karyawan')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                     </div>
 
                     <div class="form-group">
                         <label for="foto">Foto</label>
                         <input type="file" name="foto" id="foto" class="form-control">
+
+                        @error('foto')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer">
